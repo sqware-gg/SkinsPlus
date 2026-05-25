@@ -1,5 +1,5 @@
 name: SkinsPlus
-version: 0.1.0-SNAPSHOT
+version: 0.1.0
 main: dev.skinsplus.SkinsPlusPlugin
 description: Skin restoration and skin management for Paper servers.
 author: SQWARE / Conflict

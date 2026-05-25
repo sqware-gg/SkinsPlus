@@ -131,7 +131,7 @@ Keep `skin-cache.yml` between updates unless you intentionally want to force fre
 The shaded server jar is written to:
 
 ```text
-target/SkinsPlus-0.1.0-SNAPSHOT.jar
+target/SkinsPlus-0.1.0.jar
 ```
 
 ## Troubleshooting
