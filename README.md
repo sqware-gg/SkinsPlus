@@ -149,6 +149,10 @@ target/SkinsPlus-0.1.0.jar
 - Fallback skins are all the same: change `fallback-skins.selection`.
 - Players cannot use commands: check the `skinsplus.*` permission nodes and any compatibility permissions your server already grants.
 
+## License
+
+SkinsPlus is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
 ## Support
 
 For setup help, compatibility questions, and plugin updates, use https://discord.sqware.gg.
