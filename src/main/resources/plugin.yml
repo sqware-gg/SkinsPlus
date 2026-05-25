@@ -1,0 +1,41 @@
+name: SkinsPlus
+version: 0.1.0-SNAPSHOT
+main: dev.skinsplus.SkinsPlusPlugin
+description: Skin restoration and skin management for Paper servers.
+author: SQWARE / Conflict
+website: https://sqware.gg
+api-version: '1.17'
+folia-supported: false
+commands:
+  skin:
+    description: Configure your skin.
+    usage: /skin [set|auto|clear|none|update|status|list|info|random]
+    aliases: [setskin]
+  skins:
+    description: Configure your skin.
+    usage: /skins [set|auto|clear|none|update|status|list|info|random]
+  sr:
+    description: SkinsPlus administrative commands.
+    usage: /sr reload
+permissions:
+  skinsplus.command.skin:
+    description: Allows players to use the skin command.
+    default: true
+  skinsplus.admin:
+    description: Allows administrative SkinsPlus commands.
+    default: op
+  skinsrestorer.command.set:
+    description: Allows /skin set.
+    default: true
+  skinsrestorer.command.clear:
+    description: Allows self clear/none commands.
+    default: true
+  skinsrestorer.command.update:
+    description: Allows self update commands.
+    default: true
+  skinsrestorer.admin:
+    description: Allows admin commands.
+    default: op
+  skinsrestorer.admincommand:
+    description: Allows admin commands.
+    default: op

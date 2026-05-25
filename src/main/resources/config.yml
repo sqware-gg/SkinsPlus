@@ -1,0 +1,35 @@
+# Used for update checks.
+# Do not change unless you know what you are doing.
+config-version: 1
+
+# Look up a player's Minecraft username skin automatically.
+auto-name-lookup: true
+
+# Used when no matching Minecraft skin is found.
+fallback-skins:
+  enabled: true
+
+  # stable-random gives each player a consistent fallback from the list.
+  # random picks a fallback each time.
+  # first always uses the first skin in the list.
+  selection: "stable-random"
+
+  # These are Minecraft usernames used as fallback skins.
+  list:
+    - Steve
+    - Alex
+    - Notch
+    - jeb_
+    - Dinnerbone
+
+# Max time to wait during login skin lookup.
+login-lookup-timeout-seconds: 4
+
+# How long successful skin lookups stay cached.
+skin-cache-ttl-hours: 24
+
+# How long failed username lookups stay cached.
+missing-profile-cache-ttl-minutes: 15
+
+# Reapply skins to online players after /sr reload.
+reapply-on-reload: true
