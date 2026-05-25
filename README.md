@@ -11,6 +11,10 @@ Use it for survival servers, cracked/offline-mode networks, events, lobby server
 - Website: https://sqware.gg
 - Support and plugin updates: https://discord.sqware.gg
 
+## Screenshots
+
+Screenshot capture guidance is available in [docs/screenshots](docs/screenshots/README.md).
+
 ## Compatibility
 
 - Server software: Paper
@@ -127,6 +131,8 @@ Caching reduces Mojang API calls, makes joins more reliable during temporary Moj
 SkinsPlus does not overwrite your existing `config.yml`. If the bundled config changes, the plugin writes `plugins/SkinsPlus/config-new.yml` so you can compare and copy new settings.
 
 Keep `skin-cache.yml` between updates unless you intentionally want to force fresh Mojang lookups.
+
+Release history is tracked in [CHANGELOG.md](CHANGELOG.md).
 
 ## Build From Source
 
