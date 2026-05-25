@@ -11,10 +11,6 @@ Use it for survival servers, cracked/offline-mode networks, events, lobby server
 - Website: https://sqware.gg
 - Support and plugin updates: https://discord.sqware.gg
 
-## Screenshots
-
-Screenshot capture guidance is available in [docs/screenshots](docs/screenshots/README.md).
-
 ## Compatibility
 
 - Server software: Paper
