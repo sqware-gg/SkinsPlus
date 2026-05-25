@@ -2,14 +2,14 @@
 
 [![Build](https://github.com/sqware-gg/SkinsPlus/actions/workflows/build.yml/badge.svg)](https://github.com/sqware-gg/SkinsPlus/actions/workflows/build.yml)
 
-SkinsPlus is a standalone Paper skin restoration and skin management plugin. It gives players familiar `/skin`, `/skins`, and `/sr reload` workflows while keeping the implementation lightweight and server-owner friendly.
+SkinsPlus is a Minecraft skin plugin for Paper servers. It restores player skins, lets players change or clear their skin with simple commands, caches signed Mojang texture data, and provides fallback skins when a username lookup is missing or unavailable.
 
-It is designed for Minecraft servers that want simple player skin control without NMS, packet reflection, or a large dependency chain.
+Use it for survival servers, cracked/offline-mode networks, events, lobby servers, roleplay servers, or any Paper server where players expect reliable `/skin` commands and automatic skin handling.
 
 ## Links
 
 - Website: https://sqware.gg
-- Plugin information and support: https://discord.sqware.gg
+- Support and plugin updates: https://discord.sqware.gg
 
 ## Compatibility
 
@@ -21,23 +21,32 @@ It is designed for Minecraft servers that want simple player skin control withou
 
 As of May 2026, Paper is the supported target. The plugin uses official Paper/Bukkit APIs and Mojang session services.
 
+## Why Server Owners Use It
+
+- Restore username skins automatically when players join.
+- Give players simple commands to set, clear, update, inspect, or randomize skins.
+- Cache signed Mojang skin data to reduce API calls and improve join reliability.
+- Use fallback skins for players without a matching Mojang profile.
+- Avoid NMS and packet-reflection maintenance problems.
+
 ## Features
 
 - Automatic username skin lookup on join.
-- Player commands for setting, clearing, updating, listing, and randomizing skins.
-- Fallback skins when a username lookup fails.
-- Stable random fallback selection so players keep a consistent fallback.
-- Signed Mojang texture caching in `skin-cache.yml`.
+- `/skin` and `/skins` player commands.
+- Set skin by Minecraft username.
+- Clear, disable, update, list, inspect, and randomize skin choices.
+- Configurable fallback skins.
+- Stable random fallback mode so players keep a consistent fallback.
+- Signed texture caching in `skin-cache.yml`.
 - Cache expiry for successful and failed lookups.
-- `/skin` and `/skins` aliases for familiar player workflows.
-- SkinsRestorer-style compatibility permissions for common setups.
-- Config update safety through `config-new.yml`.
+- Compatibility permission nodes for common existing permission setups.
+- Config-safe updates through `config-new.yml`.
 
 ## Installation
 
-1. Download the latest SkinsPlus jar from GitHub Releases.
+1. Download the latest jar from the GitHub Releases page.
 2. Stop your Paper server.
-3. Put the jar in your server `plugins` folder.
+3. Put the jar in the server `plugins` folder.
 4. Start the server once to generate `plugins/SkinsPlus/config.yml`.
 5. Review fallback skins and cache settings.
 6. Restart the server, or run `/sr reload`.
@@ -76,12 +85,9 @@ Admin:
 ```text
 skinsplus.command.skin       - use player skin commands, default true
 skinsplus.admin              - use /sr reload, default op
-skinsrestorer.command.set    - compatibility permission for /skin set, default true
-skinsrestorer.command.clear  - compatibility permission for clear/none, default true
-skinsrestorer.command.update - compatibility permission for update, default true
-skinsrestorer.admin          - admin compatibility permission, default op
-skinsrestorer.admincommand   - admin compatibility permission, default op
 ```
+
+SkinsPlus also accepts several legacy compatibility permission nodes so existing server permission setups can migrate without immediately rewriting every group.
 
 ## Configuration
 
@@ -136,11 +142,11 @@ target/SkinsPlus-0.1.0.jar
 
 ## Troubleshooting
 
-- If skins do not update immediately for every viewer, have the player relog after changing skin.
-- If Mojang lookups fail, check outbound HTTPS access to Mojang API and sessionserver endpoints.
-- If fallback skins are all the same, change `fallback-skins.selection`.
-- If players cannot use commands, check both `skinsplus.*` and compatibility `skinsrestorer.*` permissions.
+- Skin does not update immediately for every viewer: have the player relog after changing skin.
+- Mojang lookups fail: check outbound HTTPS access to Mojang API and sessionserver endpoints.
+- Fallback skins are all the same: change `fallback-skins.selection`.
+- Players cannot use commands: check the `skinsplus.*` permission nodes and any compatibility permissions your server already grants.
 
 ## Support
 
-For setup help, compatibility questions, and plugin information, use https://discord.sqware.gg.
+For setup help, compatibility questions, and plugin updates, use https://discord.sqware.gg.
