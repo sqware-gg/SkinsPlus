@@ -1,6 +1,7 @@
 package dev.skinsplus.skin;
 
 import java.util.List;
+import java.util.Locale;
 
 public record SkinsPlusConfig(
         boolean autoNameLookup,
@@ -26,10 +27,22 @@ public record SkinsPlusConfig(
     }
 
     public SkinsPlusConfig {
-        fallbackSelection = fallbackSelection == null || fallbackSelection.isBlank() ? "stable-random" : fallbackSelection;
+        fallbackSelection = normalizeFallbackSelection(fallbackSelection);
         fallbackSkins = fallbackSkins == null || fallbackSkins.isEmpty() ? defaults().fallbackSkins() : List.copyOf(fallbackSkins);
         loginLookupTimeoutSeconds = Math.max(1L, loginLookupTimeoutSeconds);
         skinCacheTtlHours = Math.max(1L, skinCacheTtlHours);
         missingProfileCacheTtlMinutes = Math.max(1L, missingProfileCacheTtlMinutes);
+    }
+
+    private static String normalizeFallbackSelection(String fallbackSelection) {
+        if (fallbackSelection == null || fallbackSelection.isBlank()) {
+            return "stable-random";
+        }
+
+        String normalized = fallbackSelection.toLowerCase(Locale.ROOT);
+        return switch (normalized) {
+            case "first", "random", "stable-random" -> normalized;
+            default -> "stable-random";
+        };
     }
 }

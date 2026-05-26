@@ -11,6 +11,8 @@ import dev.skinsplus.skin.SkinResult;
 import dev.skinsplus.skin.SkinService;
 import dev.skinsplus.skin.SkinsPlusConfig;
 import dev.skinsplus.skin.SkinsPlusConfigLoader;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -30,12 +32,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public final class SkinsPlusPlugin extends JavaPlugin implements Listener {
+    private static final int BSTATS_PLUGIN_ID = 31597;
+
     private PlayerSkinSettingsStore settingsStore;
     private SkinCache skinCache;
     private SkinService skinService;
     private SkinApplier skinApplier;
     private BukkitTask cacheMaintenanceTask;
-    private SkinsPlusConfig config;
+    private volatile SkinsPlusConfig config;
     private SkinLogger skinLogger;
 
     @Override
@@ -43,12 +47,24 @@ public final class SkinsPlusPlugin extends JavaPlugin implements Listener {
         ConfigReferenceWriter.saveDefaultAndReferenceIfNeeded(this);
         skinLogger = createSkinLogger();
         loadConfig();
+        startMetrics();
         skinApplier = new SkinApplier(this);
         loadServices();
 
         Bukkit.getPluginManager().registerEvents(this, this);
         registerCommands();
         startCacheMaintenance();
+    }
+
+    private void startMetrics() {
+        Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+        metrics.addCustomChart(new SimplePie("auto_name_lookup", () -> enabledLabel(currentConfig().autoNameLookup())));
+        metrics.addCustomChart(new SimplePie("fallback_skins_enabled", () -> enabledLabel(currentConfig().fallbackSkinsEnabled())));
+        metrics.addCustomChart(new SimplePie("fallback_selection", () -> currentConfig().fallbackSelection()));
+    }
+
+    private String enabledLabel(boolean enabled) {
+        return enabled ? "enabled" : "disabled";
     }
 
     private void registerCommands() {

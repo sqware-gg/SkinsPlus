@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,6 +207,9 @@ public final class SkinService {
         String selection = configSupplier.get().fallbackSelection();
         if (selection.equalsIgnoreCase("first")) {
             return 0;
+        }
+        if (selection.equalsIgnoreCase("random")) {
+            return ThreadLocalRandom.current().nextInt(size);
         }
         return Math.floorMod((playerId + ":" + playerName.toLowerCase()).hashCode(), size);
     }

@@ -1,6 +1,7 @@
 package dev.skinsplus.command;
 
 import dev.skinsplus.SkinsPlusPlugin;
+import dev.skinsplus.api.event.SkinChangeEvent;
 import dev.skinsplus.skin.PlayerSkinSettings;
 import dev.skinsplus.skin.PlayerSkinSettingsStore;
 import dev.skinsplus.skin.SkinApplier;
@@ -11,6 +12,7 @@ import dev.skinsplus.skin.SkinService;
 import dev.skinsplus.skin.TextureMetadata;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,6 +26,11 @@ import java.util.Optional;
 import java.util.Random;
 
 public final class SkinCommand implements TabExecutor {
+    private static final TextColor PRIMARY = TextColor.color(0x2b98fd);
+    private static final TextColor SECONDARY = TextColor.color(0x8ecbff);
+    private static final TextColor SUCCESS = TextColor.color(0x57F287);
+    private static final TextColor ERROR = TextColor.color(0xED4245);
+    private static final TextColor WARNING = TextColor.color(0xf5c542);
     private static final List<String> SKIN_SUBCOMMANDS = List.of("set", "auto", "clear", "reset", "default", "none", "off", "update", "refresh", "status", "list", "info", "random", "help");
     private static final List<String> ADMIN_SUBCOMMANDS = List.of("reload", "help");
 
@@ -96,7 +103,7 @@ public final class SkinCommand implements TabExecutor {
 
     private void setNamedSkin(CommandSender sender, Player player, String[] args) {
         if (args.length != 2) {
-            sender.sendMessage(Component.text("Usage: /skin set <skinName>", NamedTextColor.RED));
+            send(sender, "Usage: /skin set <skinName>", PRIMARY);
             return;
         }
         setSkin(sender, player, args[1]);
@@ -108,7 +115,7 @@ public final class SkinCommand implements TabExecutor {
         }
 
         PlayerSkinSettings next = new PlayerSkinSettings(player.getUniqueId(), player.getName(), SkinMode.MOJANG, skinName, System.currentTimeMillis());
-        sender.sendMessage(Component.text("Looking up skin " + skinName + "...", NamedTextColor.YELLOW));
+        send(sender, "Looking up skin " + skinName + "...", WARNING);
         applySetting(sender, player, next, true);
     }
 
@@ -118,7 +125,7 @@ public final class SkinCommand implements TabExecutor {
         }
 
         PlayerSkinSettings next = new PlayerSkinSettings(player.getUniqueId(), player.getName(), SkinMode.AUTO, null, System.currentTimeMillis());
-        sender.sendMessage(Component.text("Restoring automatic skin...", NamedTextColor.YELLOW));
+        send(sender, "Restoring automatic skin...", WARNING);
         applySetting(sender, player, next, false);
     }
 
@@ -129,7 +136,8 @@ public final class SkinCommand implements TabExecutor {
 
         settingsStore.set(new PlayerSkinSettings(player.getUniqueId(), player.getName(), SkinMode.NONE, null, System.currentTimeMillis()));
         skinApplier.apply(player, Optional.empty());
-        sender.sendMessage(Component.text("Skin disabled.", NamedTextColor.YELLOW));
+        send(sender, "Skin disabled.", WARNING);
+        Bukkit.getPluginManager().callEvent(new SkinChangeEvent(player, "none", "", true, false));
     }
 
     private void clear(CommandSender sender, Player player) {
@@ -138,7 +146,7 @@ public final class SkinCommand implements TabExecutor {
         }
 
         settingsStore.remove(player.getUniqueId());
-        sender.sendMessage(Component.text("Resetting skin...", NamedTextColor.YELLOW));
+        send(sender, "Resetting skin...", WARNING);
         plugin.refreshOnlinePlayer(player, true)
                 .thenAccept(result -> Bukkit.getScheduler().runTask(plugin, () -> sendResult(sender, player, result, false)))
                 .exceptionally(exception -> {
@@ -152,7 +160,7 @@ public final class SkinCommand implements TabExecutor {
             return;
         }
 
-        sender.sendMessage(Component.text("Refreshing skin...", NamedTextColor.YELLOW));
+        send(sender, "Refreshing skin...", WARNING);
         plugin.refreshOnlinePlayer(player, false)
                 .thenAccept(result -> Bukkit.getScheduler().runTask(plugin, () -> sendResult(sender, player, result, false)))
                 .exceptionally(exception -> {
@@ -167,9 +175,9 @@ public final class SkinCommand implements TabExecutor {
         }
 
         List<String> fallbackSkins = availableSkinNames();
-        sender.sendMessage(Component.text("Configured fallback skins:", NamedTextColor.AQUA));
-        sender.sendMessage(Component.text(fallbackSkins.isEmpty() ? "none" : String.join(", ", fallbackSkins), NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("You can use any valid player name: /skin set <name>", NamedTextColor.DARK_GRAY));
+        send(sender, "Configured fallback skins:", PRIMARY);
+        send(sender, fallbackSkins.isEmpty() ? "none" : String.join(", ", fallbackSkins), NamedTextColor.GRAY);
+        send(sender, "Use any valid player name: /skin set <name>", NamedTextColor.DARK_GRAY);
     }
 
     private void skinInfo(CommandSender sender, String[] args) {
@@ -177,7 +185,7 @@ public final class SkinCommand implements TabExecutor {
             return;
         }
         if (args.length != 2) {
-            sender.sendMessage(Component.text("Usage: /skin info <skinName>", NamedTextColor.RED));
+            send(sender, "Usage: /skin info <skinName>", PRIMARY);
             return;
         }
         describeSkin(sender, args[1]);
@@ -192,7 +200,7 @@ public final class SkinCommand implements TabExecutor {
                 .filter(skinService::isValidMinecraftName)
                 .toList();
         if (choices.isEmpty()) {
-            sender.sendMessage(Component.text("No fallback skins are configured.", NamedTextColor.YELLOW));
+            send(sender, "No fallback skins are configured.", WARNING);
             return;
         }
         setSkin(sender, player, choices.get(random.nextInt(choices.size())));
@@ -203,7 +211,7 @@ public final class SkinCommand implements TabExecutor {
             return true;
         }
         plugin.reloadPlugin();
-        sender.sendMessage(Component.text("SkinsPlus reloaded.", NamedTextColor.GREEN));
+        send(sender, "Skins reloaded.", SUCCESS);
         return true;
     }
 
@@ -223,7 +231,7 @@ public final class SkinCommand implements TabExecutor {
                 .exceptionally(exception -> {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         previous.ifPresentOrElse(settingsStore::set, () -> settingsStore.remove(player.getUniqueId()));
-                        sender.sendMessage(Component.text("Skin lookup failed.", NamedTextColor.RED));
+                        send(sender, "Skin lookup failed.", ERROR);
                     });
                     return null;
                 });
@@ -232,26 +240,30 @@ public final class SkinCommand implements TabExecutor {
     private void sendResult(CommandSender sender, Player player, SkinResult result, boolean rolledBack) {
         switch (result.status()) {
             case APPLIED -> {
-                sender.sendMessage(Component.text("Skin applied from " + result.sourceName() + " (" + textureSummary(result) + ").", NamedTextColor.GREEN));
-                sender.sendMessage(Component.text("If you do not see it immediately, rejoin once.", NamedTextColor.GRAY));
+                send(sender, "Skin applied from " + result.sourceName() + " (" + textureSummary(result) + ").", SUCCESS);
+                send(sender, "If it does not appear immediately, rejoin once.", NamedTextColor.GRAY);
+                Bukkit.getPluginManager().callEvent(new SkinChangeEvent(player, "mojang", result.sourceName(), true, rolledBack));
             }
-            case DISABLED -> sender.sendMessage(Component.text("Skin disabled.", NamedTextColor.YELLOW));
-            case MISSING_PROFILE -> sender.sendMessage(Component.text(rolledBack
+            case DISABLED -> {
+                send(sender, "Skin disabled.", WARNING);
+                Bukkit.getPluginManager().callEvent(new SkinChangeEvent(player, "none", result.sourceName(), false, rolledBack));
+            }
+            case MISSING_PROFILE -> send(sender, rolledBack
                     ? "No skin exists for " + result.sourceName() + ". Settings were not changed."
-                    : "No skin exists for " + result.sourceName() + ".", NamedTextColor.YELLOW));
-            case ERROR -> sender.sendMessage(Component.text("Skin lookup failed: " + result.message(), NamedTextColor.RED));
+                    : "No skin exists for " + result.sourceName() + ".", WARNING);
+            case ERROR -> send(sender, "Skin lookup failed: " + result.message(), ERROR);
         }
     }
 
     private void sendFailure(CommandSender sender, String message) {
-        Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(Component.text(message, NamedTextColor.RED)));
+        Bukkit.getScheduler().runTask(plugin, () -> send(sender, message, ERROR));
     }
 
     private Optional<Player> requirePlayer(CommandSender sender) {
         if (sender instanceof Player player) {
             return Optional.of(player);
         }
-        sender.sendMessage(Component.text("Only players can use skin commands.", NamedTextColor.RED));
+        send(sender, "Only players can use skin commands.", ERROR);
         return Optional.empty();
     }
 
@@ -259,7 +271,7 @@ public final class SkinCommand implements TabExecutor {
         if (hasAny(sender, permissions)) {
             return true;
         }
-        sender.sendMessage(Component.text("You do not have permission to use this command.", NamedTextColor.RED));
+        send(sender, "No permission.", ERROR);
         return false;
     }
 
@@ -274,7 +286,7 @@ public final class SkinCommand implements TabExecutor {
 
     private void showStatus(Player player) {
         PlayerSkinSettings settings = settingsStore.findOrDefault(player.getUniqueId(), player.getName());
-        player.sendMessage(Component.text("Current skin: " + skinKey(settings), NamedTextColor.AQUA));
+        send(player, "Current skin: " + skinKey(settings), SECONDARY);
     }
 
     private String skinKey(PlayerSkinSettings settings) {
@@ -288,29 +300,29 @@ public final class SkinCommand implements TabExecutor {
     }
 
     private void skinHelp(CommandSender sender) {
-        sender.sendMessage(Component.text("/skin set <name>", NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("/skin auto", NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("/skin clear", NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("/skin none", NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("/skin update", NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("/skin status | list | info <name> | random", NamedTextColor.GRAY));
+        send(sender, "/skin set <name>", PRIMARY);
+        send(sender, "/skin auto", PRIMARY);
+        send(sender, "/skin clear", PRIMARY);
+        send(sender, "/skin none", PRIMARY);
+        send(sender, "/skin update", PRIMARY);
+        send(sender, "/skin status | list | info <name> | random", PRIMARY);
     }
 
     private void adminHelp(CommandSender sender) {
-        sender.sendMessage(Component.text("/sr reload", NamedTextColor.GRAY));
+        send(sender, "/sr reload", PRIMARY);
     }
 
     private void describeSkin(CommandSender sender, String skinName) {
-        sender.sendMessage(Component.text("Looking up skin " + skinName + "...", NamedTextColor.YELLOW));
+        send(sender, "Looking up skin " + skinName + "...", WARNING);
         skinService.resolveInput(skinName, true)
                 .thenAccept(result -> Bukkit.getScheduler().runTask(plugin, () -> {
                     if (result.property().isEmpty()) {
-                        sender.sendMessage(Component.text("No skin exists for " + skinName + ".", NamedTextColor.YELLOW));
+                        send(sender, "No skin exists for " + skinName + ".", WARNING);
                         return;
                     }
                     TextureMetadata metadata = TextureMetadata.from(result.property().get());
-                    sender.sendMessage(Component.text("Skin: " + skinName, NamedTextColor.AQUA));
-                    sender.sendMessage(Component.text("Textures: " + metadata.summary(), NamedTextColor.GRAY));
+                    send(sender, "Skin: " + skinName, SECONDARY);
+                    send(sender, "Textures: " + metadata.summary(), NamedTextColor.GRAY);
                 }))
                 .exceptionally(exception -> {
                     sendFailure(sender, "Skin lookup failed.");
@@ -323,6 +335,12 @@ public final class SkinCommand implements TabExecutor {
                 .map(TextureMetadata::from)
                 .map(TextureMetadata::summary)
                 .orElse("cape=no");
+    }
+
+    private void send(CommandSender sender, String message, TextColor color) {
+        sender.sendMessage(Component.text("SkinsPlus ", PRIMARY)
+                .append(Component.text("› ", NamedTextColor.DARK_GRAY))
+                .append(Component.text(message, color)));
     }
 
     @Override
