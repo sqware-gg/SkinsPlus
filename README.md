@@ -2,6 +2,8 @@
 
 [![Build](https://github.com/sqware-gg/SkinsPlus/actions/workflows/build.yml/badge.svg)](https://github.com/sqware-gg/SkinsPlus/actions/workflows/build.yml)
 
+**Get the plugin jar, setup help, and updates in the SQWARE Discord: [discord.sqware.gg](https://discord.sqware.gg).**
+
 SkinsPlus is a SkinsRestorer-style skin plugin for Paper servers. It restores username skins, lets players change or clear skins with `/skin`, caches signed Mojang texture data, and provides fallback skins for missing profiles.
 
 Use it for offline-mode networks, cracked servers, lobby servers, events, roleplay servers, or any Paper server that needs reliable Minecraft skin commands without NMS or packet reflection.
@@ -99,9 +101,6 @@ Caching reduces Mojang API calls and keeps login lookups bounded during Mojang A
 
 The shaded jar is written to `target/SkinsPlus-0.1.0.jar`.
 
-## Support
-
-- Website: https://sqware.gg
-- Discord: https://discord.sqware.gg
+## License
 
 SkinsPlus is licensed under the Apache License, Version 2.0.
