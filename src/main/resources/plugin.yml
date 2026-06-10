@@ -4,7 +4,7 @@ main: dev.skinsplus.SkinsPlusPlugin
 description: Skin restoration and skin management for Paper servers.
 author: SQWARE / Conflict
 website: https://sqware.gg
-api-version: '1.17'
+api-version: '26.1.2'
 folia-supported: false
 commands:
   skin:
