@@ -4,7 +4,7 @@
 
 **Join the SQWARE Discord: [discord.sqware.gg](https://discord.sqware.gg).**
 
-SkinsPlus is a SkinsRestorer-style skin plugin for Paper servers. It restores username skins, lets players change or clear skins with `/skin`, caches signed Mojang texture data, and provides fallback skins for missing profiles.
+SkinsPlus is a skin plugin for Paper servers. It restores username skins, lets players change or clear skins with `/skin`, caches signed Mojang texture data, and provides fallback skins for missing profiles.
 
 Use it for offline-mode networks, cracked servers, lobby servers, events, roleplay servers, or any Paper server that needs reliable Minecraft skin commands without NMS or packet reflection.
 
@@ -18,14 +18,13 @@ Use it for offline-mode networks, cracked servers, lobby servers, events, rolepl
 - Stable random fallback mode so players keep a consistent fallback.
 - Signed Mojang texture caching in `skin-cache.yml`.
 - Cache expiry for successful and failed lookups.
-- SkinsRestorer-compatible permission nodes for easier migration.
+- Compatibility permission nodes for easier migration.
 - Config-safe updates through `config-new.yml`.
 
 ## Requirements
 
-- Paper
-- API target: Paper `1.17.1`
-- Java `16+`
+- Paper `26.2+`
+- Java `25+`
 - Maven wrapper included
 - No NMS or packet reflection
 
